@@ -1,0 +1,10 @@
+LIBRPCSERVER_1.0.0 {
+    global:
+        *IAbstractRpcServer*;
+        *IRpcServerControl*;
+        *IRpcMethodBinder*;
+        *IRpcExternalEventListener*;
+        *IRpcServerBuilder*;
+        *WsRpcServerBuilder*;
+    local: *;
+};
