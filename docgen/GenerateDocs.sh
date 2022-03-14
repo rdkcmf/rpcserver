@@ -34,7 +34,7 @@ mkdir -p $DIR/$TEMPDIR
     [ ! -d Thunder ] && \
     git clone git@github.com:rdkcentral/Thunder.git && \
     (cd Thunder && git checkout 31858b496b97fe41fcffdd341b1d3357836af985) && \
-    (cd Thunder && git am ../../patch/0001-Simplified-docs-generation.patch) \
+    (cd Thunder && git apply ../../patch/0001-Simplified-docs-generation.patch) \
 )
 
 mkdir -p doc

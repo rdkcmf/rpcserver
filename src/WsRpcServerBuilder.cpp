@@ -52,13 +52,15 @@ WsRpcServerBuilder::~WsRpcServerBuilder() = default;
  *
  * *************************************************************/
 WsRpcServerBuilder& WsRpcServerBuilder::enableServerEvents(const std::string& registerMethodName,
-                                                     const std::string& unregisterMethodName)
+                                                     const std::string& unregisterMethodName,
+                                                     const std::string& getListenersMethodName)
 {
-  if (registerMethodName.empty() || unregisterMethodName.empty()) {
-    throw std::invalid_argument("Both 'register' and 'unregister' method names should not be empty to enable server events");
+  if (registerMethodName.empty() || unregisterMethodName.empty() || getListenersMethodName.empty()) {
+    throw std::invalid_argument("All 'register', 'unregister' and 'getListeners' method names should not be empty");
   }
   m_registerMethodName = registerMethodName;
   m_unregisterMethodName = unregisterMethodName;
+  m_getListenersMethodName = getListenersMethodName;
   return *this;
 }
 
@@ -77,5 +79,5 @@ WsRpcServerBuilder& WsRpcServerBuilder::numThreads(std::size_t numThreads)
 IAbstractRpcServer* WsRpcServerBuilder::build() const
 {
   return new WsRpcServer(
-    m_host, m_port, m_ipv4only, m_registerMethodName, m_unregisterMethodName, m_numThreads);
+    m_host, m_port, m_ipv4only, m_registerMethodName, m_unregisterMethodName, m_getListenersMethodName, m_numThreads);
 }

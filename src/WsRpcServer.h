@@ -46,6 +46,7 @@ public:
               bool ipv4only,
               const std::string& registerMethodName,
               const std::string& unregisterMethodName,
+              const std::string& getListenersMethodName,
               std::size_t numThreads = 1);
 
   /***************************************************************

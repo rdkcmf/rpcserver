@@ -109,6 +109,27 @@ public:
   }
 
   /***************************************************************
+   * Get events listeners
+   * *************************************************************/
+  Json::Value getListenersOfEvents(const H& clientCtx, std::string eventParamName, std::string idParamName)
+  {
+    std::lock_guard<std::mutex> lock(m_regsLock);
+
+    Json::Value listeners(Json::arrayValue);
+
+    for (const auto& pair : m_registrations) {
+      for(const auto& ri : pair.second) {
+        Json::Value item;
+        item[eventParamName] = pair.first;
+        item[idParamName] = ri.m_id;
+        listeners.append(item);
+      }
+    }
+
+    return listeners;
+  }
+
+  /***************************************************************
    * Unregister connection
    * *************************************************************/
   void unregisterConn(const H& clientCtx)

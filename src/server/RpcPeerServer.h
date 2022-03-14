@@ -46,6 +46,7 @@ class RpcPeerServer : public IPeerServerHandler<H>
 private:
   static constexpr auto RPC_METHOD_PARAM_EVENT = "event";
   static constexpr auto RPC_METHOD_PARAM_ID = "id";
+  static constexpr auto RPC_METHOD_PARAM_LISTENERS = "listeners";
 
 public:
   /***************************************************************
@@ -53,15 +54,15 @@ public:
    * *************************************************************/
   RpcPeerServer(AbstractPeerServerConnector<H>& connector,
                 const std::string& registerMethodName,
-                const std::string& unregisterMethodName)
+                const std::string& unregisterMethodName,
+                const std::string& getListenersMethodName)
     : m_connector(connector)
     , m_registerMethodName(registerMethodName)
     , m_unregisterMethodName(unregisterMethodName)
+    , m_getListenersMethodName(getListenersMethodName)
   {
-    if (!m_registerMethodName.empty() && m_unregisterMethodName.empty()) {
-      throw std::invalid_argument("'register' method is provided but 'unregister' is not");
-    } else if (m_registerMethodName.empty() && !m_unregisterMethodName.empty()) {
-      throw std::invalid_argument("'unregister method is provided but 'register' is not");
+    if (registerMethodName.empty() || unregisterMethodName.empty() || getListenersMethodName.empty()) {
+      throw std::invalid_argument("All 'register', 'unregister' and 'getListeners' methods should be provided");
     }
 
     m_connector.setPeerHandler(this);
@@ -82,12 +83,11 @@ public:
   virtual std::vector<std::string> getMethodList() override
   {
     std::vector<std::string> result;
-    if (!m_registerMethodName.empty()) {
-      result.push_back(m_registerMethodName);
-    }
-    if (!m_unregisterMethodName.empty()) {
-      result.push_back(m_unregisterMethodName);
-    }
+
+    result.push_back(m_registerMethodName);
+    result.push_back(m_unregisterMethodName);
+    result.push_back(m_getListenersMethodName);
+
     for (auto& pair : m_methodTable) {
       result.push_back(pair.first);
     }
@@ -150,6 +150,8 @@ public:
       HandleRegister(connHdl, input, output);
     } else if (name == m_unregisterMethodName) {
       HandleUnregister(connHdl, input, output);
+    } else if (name == m_getListenersMethodName) {
+      HandleGetListeners(connHdl, input, output);
     } else {
       m_methodTable.at(name)(input, output);
     }
@@ -280,9 +282,19 @@ protected:
   /***************************************************************
    *
    * *************************************************************/
+  virtual void HandleGetListeners(const H& clientCtx, const Json::Value& input, Json::Value& output)
+  {
+    output[RPC_METHOD_PARAM_LISTENERS] = m_eventManager->getListenersOfEvents(clientCtx,
+                                                                              RPC_METHOD_PARAM_EVENT,
+                                                                              RPC_METHOD_PARAM_ID);
+  }
+
+  /***************************************************************
+   *
+   * *************************************************************/
   bool symbolExists(const std::string& name)
   {
-    if (name == m_registerMethodName || name == m_unregisterMethodName) {
+    if (name == m_registerMethodName || name == m_unregisterMethodName || name == m_getListenersMethodName) {
       return true;
     }
     if (m_methodTable.find(name) != m_methodTable.end()) {
@@ -297,6 +309,7 @@ protected:
   AbstractPeerServerConnector<H>& m_connector;
   std::string m_registerMethodName;
   std::string m_unregisterMethodName;
+  std::string m_getListenersMethodName;
   std::unique_ptr<RpcEventManager<H, C>> m_eventManager;
   std::map<std::string, std::function<void(const Json::Value&, Json::Value&)>> m_methodTable;
   std::map<std::string, std::function<void(const Json::Value&)>> m_notificationsTable;

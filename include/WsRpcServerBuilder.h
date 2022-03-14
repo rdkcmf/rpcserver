@@ -39,7 +39,8 @@ public:
   virtual ~WsRpcServerBuilder();
 
   WsRpcServerBuilder& enableServerEvents(const std::string& registerMethodName,
-                                   const std::string& unregisterMethodName);
+                                   const std::string& unregisterMethodName,
+                                   const std::string& getListenersMethodName);
 
   WsRpcServerBuilder& numThreads(std::size_t numThreads);
 
@@ -52,6 +53,7 @@ protected:
 
   std::string m_registerMethodName;
   std::string m_unregisterMethodName;
+  std::string m_getListenersMethodName;
   std::size_t m_numThreads = 1;
 };
 
