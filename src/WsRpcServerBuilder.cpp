@@ -76,8 +76,17 @@ WsRpcServerBuilder& WsRpcServerBuilder::numThreads(std::size_t numThreads)
 /***************************************************************
  *
  * *************************************************************/
+WsRpcServerBuilder& WsRpcServerBuilder::sock_reuse_addr(bool _sock_reuse_addr)
+{
+  m_sock_reuse_addr = _sock_reuse_addr;
+  return *this;
+}
+
+/***************************************************************
+ *
+ * *************************************************************/
 IAbstractRpcServer* WsRpcServerBuilder::build() const
 {
   return new WsRpcServer(
-    m_host, m_port, m_ipv4only, m_registerMethodName, m_unregisterMethodName, m_getListenersMethodName, m_numThreads);
+    m_host, m_port, m_ipv4only, m_registerMethodName, m_unregisterMethodName, m_getListenersMethodName, m_numThreads, m_sock_reuse_addr);
 }

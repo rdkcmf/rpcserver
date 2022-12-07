@@ -40,8 +40,9 @@ WsRpcServer::WsRpcServer(const std::string& host,
                          const std::string& registerMethodName,
                          const std::string& unregisterMethodName,
                          const std::string& getListenersMethodName,
-                         std::size_t numThreads)
-  : m_wsConnector(std::unique_ptr<WsConnector>(new WsConnector(host, port, ipv4only, numThreads)))
+                         std::size_t numThreads,
+                         const bool sock_reuse_addr)
+  : m_wsConnector(std::unique_ptr<WsConnector>(new WsConnector(host, port, ipv4only, numThreads, sock_reuse_addr)))
   , m_rpcServer(std::unique_ptr<RpcPeerServer<WsClientCtx, WsClientCtxComparator>>(
       new RpcPeerServer<WsClientCtx, WsClientCtxComparator>(*m_wsConnector,
                                                         registerMethodName,

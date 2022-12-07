@@ -47,11 +47,12 @@ public:
   /***************************************************************
    *
    * *************************************************************/
-  WsConnector(const std::string& host, uint16_t port, bool ipv4only, std::size_t numThreads = 1)
+  WsConnector(const std::string& host, uint16_t port, bool ipv4only, std::size_t numThreads = 1, const bool sock_reuse_addr = true)
     : m_host(host)
     , m_port(port)
     , m_ipv4only(ipv4only)
     , m_numThreads(numThreads)
+    , m_sock_reuse_addr(sock_reuse_addr)
   {
     if (m_numThreads == 0) {
       throw std::invalid_argument("numThreads should be > 0");
@@ -412,6 +413,7 @@ protected:
 
       // Initialize ASIO
       m_server.init_asio();
+      m_server.set_reuse_addr(m_sock_reuse_addr);
       m_server.set_listen_backlog(boost::asio::socket_base::max_connections);
 
       // Init worker thread pool
@@ -457,6 +459,7 @@ protected:
   uint16_t m_port;
   bool m_ipv4only;
   std::size_t m_numThreads;
+  bool m_sock_reuse_addr;
   boost::asio::io_service m_workerIoService;
   std::map<std::thread::id, std::unique_ptr<PeerProtocolHandler<WsClientCtx>>> m_serverHandlers;
   std::map<WsClientCtx, std::unique_ptr<PeerClient>, WsClientCtxComparator> m_clientHandlers;

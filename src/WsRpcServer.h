@@ -47,7 +47,8 @@ public:
               const std::string& registerMethodName,
               const std::string& unregisterMethodName,
               const std::string& getListenersMethodName,
-              std::size_t numThreads = 1);
+              std::size_t numThreads = 1,
+              const bool sock_reuse_addr = true);
 
   /***************************************************************
    *

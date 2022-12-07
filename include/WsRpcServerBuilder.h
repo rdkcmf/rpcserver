@@ -44,6 +44,8 @@ public:
 
   WsRpcServerBuilder& numThreads(std::size_t numThreads);
 
+  WsRpcServerBuilder& sock_reuse_addr(bool sock_reuse_addr);
+
   virtual IAbstractRpcServer* build() const override;
 
 protected:
@@ -55,6 +57,7 @@ protected:
   std::string m_unregisterMethodName;
   std::string m_getListenersMethodName;
   std::size_t m_numThreads = 1;
+  bool m_sock_reuse_addr = true;
 };
 
 } // namespace rpcserver
